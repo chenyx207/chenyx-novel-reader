@@ -1,16 +1,13 @@
-import operator
 import sys
-import time, requests, re
-import numpy as np
+import requests, re
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
-from PyQt5.QtWidgets import QTableView, QHeaderView, QAbstractItemView, QCheckBox
+from PyQt5.QtWidgets import QHeaderView, QAbstractItemView
 
-import b5200_novel_download as down
 from bs4 import BeautifulSoup as BS
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 url = 'http://www.b5200.org/modules/article/search.php?searchkey='
 
