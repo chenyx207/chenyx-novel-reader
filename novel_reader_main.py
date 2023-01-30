@@ -24,6 +24,7 @@ title_list_2 = []
 novel_title_main = ""
 menu_list_main = []
 title_list_main = []
+current_index_main = 0
 
 
 class Ui_Form(object):
@@ -217,13 +218,18 @@ class Ui_Form(object):
             dialog2 = QtWidgets.QDialog()
             row = self.menu_list.currentIndex().row()
             column = self.menu_list.currentIndex().column()
-            raw = title_list_main[row][column]
-            last_chap, next_chap = self.get_last_next(int(raw['index']))
-            ui3 = self.Ui_Dialog2(last_chap, next_chap)
+            try:
+                raw = title_list_main[row][column]
+                global current_index_main
+                current_index_main = raw['index']
+            except Exception as e:
+                print("获取章节错误：", e)
+                return
+                # last_chap, next_chap = self.get_last_next(int(raw['index']))
+            ui3 = self.Ui_Dialog2()
             ui3.setupUi(dialog2, self.get_content(raw['href']), self.menu_list.currentIndex().data())
             dialog2.show()
             dialog2.exec_()
-            self.dialog1.show()
 
         def split_title(self):
             total = len(title_list)
@@ -233,7 +239,7 @@ class Ui_Form(object):
                 column = (total // 4) + 1
             else:
                 column = (total // 4)
-            for i in range(column+1):
+            for i in range(column + 1):
                 if i != 0:
                     result = title_list[(i - 1) * 4:i * 4]
                     title_list_2.append(result)
@@ -268,8 +274,6 @@ class Ui_Form(object):
             return deal_novel_content(content)
 
         class Ui_Dialog2(object):
-            def __init__(self, current_index):
-                self.current_index = current_index
 
             def setupUi(self, Dialog2, content, chapter):
                 Dialog2.setObjectName("Dialog2")
@@ -284,9 +288,11 @@ class Ui_Form(object):
                 self.last_btn = QtWidgets.QPushButton(Dialog2)
                 self.last_btn.setGeometry(QtCore.QRect(50, 90, 75, 23))
                 self.last_btn.setObjectName("last_btn")
+                self.last_btn.clicked.connect(self.last_btn_func)
                 self.next_btn = QtWidgets.QPushButton(Dialog2)
                 self.next_btn.setGeometry(QtCore.QRect(800, 100, 75, 23))
                 self.next_btn.setObjectName("next_btn")
+                self.next_btn.clicked.connect(self.next_btn_func)
                 self.content = QtWidgets.QTextBrowser(Dialog2)
                 self.content.setEnabled(True)
                 self.content.setGeometry(QtCore.QRect(30, 140, 901, 771))
@@ -305,8 +311,11 @@ class Ui_Form(object):
                 self.last_btn.setText(_translate("Form", "上一章"))
                 self.next_btn.setText(_translate("Form", "下一章"))
 
-            def last_btn(self):
-                bf = get_method_url(self.last_chap)
+            def last_btn_func(self):
+                href, title = self.get_near_chapter(0)
+                if str(href).__eq__(""):
+                    return
+                bf = get_method_url(href)
                 texts = bf.find_all('div', id='content')
                 ac = []
                 for k in range(len(texts[0].contents)):
@@ -315,12 +324,16 @@ class Ui_Form(object):
                     ac.append(line.replace("<p>", ""))
                 content = "".join(ac)
                 content = content.replace("<content></content>", "")
+                self.chapter.clear()
+                self.chapter.setText(title)
                 self.content.clear()
                 self.content.setText(deal_novel_content(content))
 
-            def next_btn(self):
-                print(self.next_chap)
-                bf = get_method_url(self.next_chap)
+            def next_btn_func(self):
+                href, title = self.get_near_chapter(1)
+                if str(href).__eq__(""):
+                    return
+                bf = get_method_url(href)
                 texts = bf.find_all('div', id='content')
                 ac = []
                 for k in range(len(texts[0].contents)):
@@ -329,8 +342,24 @@ class Ui_Form(object):
                     ac.append(line.replace("<p>", ""))
                 content = "".join(ac)
                 content = content.replace("<content></content>", "")
+                self.chapter.clear()
+                self.chapter.setText(title)
                 self.content.clear()
                 self.content.setText(deal_novel_content(content))
+
+            def get_near_chapter(self, near=0):
+                max_chap = len(title_list) - 1
+                global current_index_main
+                if current_index_main == max_chap and near == 1:
+                    return ""
+                if current_index_main == 0 and near == 0:
+                    return ""
+                if near == 1:
+                    raw = title_list[current_index_main + 1]
+                else:
+                    raw = title_list[current_index_main - 1]
+                current_index_main = raw['index']
+                return raw['href'], raw['title']
 
 
 # 判断字符串是否包含中文数字或阿拉伯数字
