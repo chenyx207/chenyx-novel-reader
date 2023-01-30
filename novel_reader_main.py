@@ -19,7 +19,6 @@ novel_url = ""
 title_list = []
 title_list_2 = []
 novel_title_main = ""
-menu_list_main = []
 title_list_main = []
 current_index_main = 0
 
@@ -124,6 +123,7 @@ class Ui_Form(object):
     def get_list(self):
         title_list.clear()
         title_list_main.clear()
+        title_list_2.clear()
         href_url = self.result_list.currentIndex().data()
         bf = get_method_url(href_url)
         texts = bf.find_all('div', id='list')
@@ -182,7 +182,6 @@ class Ui_Form(object):
             # 获取列数
             column = self.split_title()
             model = QStandardItemModel(column, 4)
-            print(title_list_2)
             if title_list_2:
                 for i in range(column):
                     row = title_list_2[i]
