@@ -1,4 +1,4 @@
-import requests, time, operator, re, os, json, sys
+import time, operator, os, json, sys, common_func
 from bs4 import BeautifulSoup as BS
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -107,7 +107,7 @@ def download_partner(target_list):
             index = target['index']  # 章节序号
             title = target['title']  # 章节标题
             href = target['href']  # 章节内容链接
-            bf = get_method_url(href)
+            bf = common_func.get_method_url(href)
             texts = bf.find_all('div', id='content')
             ac = [title]
             for k in range(len(texts[0].contents)):
@@ -119,35 +119,16 @@ def download_partner(target_list):
 
             row = {
                 "index": index,
-                "txt": deal_novel_content(content)
+                "txt": common_func.deal_novel_content(content)
             }
             f_list.append(row)
             success_num += 1
             # 进度显示
-            sys_progress(success_num, directory)
+            common_func.sys_progress(success_num, directory)
         except Exception:
             error_list.append(target)
         time.sleep(1)
     return f_list
-
-
-# 处理小说章节正文内容
-def deal_novel_content(content):
-    enter_count = content.count("\n")
-    if enter_count < 10:
-        content1 = content
-        if str(content).__contains__("。"):
-            content1 = content1.replace("。", "。\n\n　　")
-        if str(content).__contains__("”"):
-            content1 = content1.replace("”", "”\n\n　　")
-        if str(content).__contains__("!"):
-            content1 = content1.replace("!", "!\n\n　　")
-        if str(content).__contains__("】"):
-            content1 = content1.replace("】", "】\n\n　　")
-        if str(content1).__contains__("。\n\n　　”"):
-            content1 = content1.replace("。\n\n　　”", "。”")
-        return content1
-    return content
 
 
 # 获取目录列表
@@ -155,7 +136,7 @@ def deal_novel_content(content):
 # skip_num -> 删除前面的目录后跳过多少个章节  ps: 跳过前面多余的章节，如果前面已经爬过这篇小说且有备份的话，可以跳过已经爬过的章节数，只爬取未爬过的章节，然后手动将两篇合在一起
 # flag -> 是否重新组装章节数和章节名   ps: 有的小说的章节数奇奇怪怪的，不是正常的’第...章‘这种格式，所以需要提取章节里面的数字和章节名重新组装，不然txt格式的话掌阅这种软件就识别不了目录，就没有目录
 def get_list(is_del=9, skip_num=0, flag=False):
-    bf = get_method_url(url)
+    bf = common_func.get_method_url(url)
     texts = bf.find_all('div', id='list')
     bf = BS(str(texts[0]), "lxml")
     texts = bf.find_all('a')
@@ -167,7 +148,7 @@ def get_list(is_del=9, skip_num=0, flag=False):
     for ac in texts:
         title = str(ac.text)
         # 判断标题是否包含数字
-        if not isNumber(title):
+        if not common_func.is_number(title):
             continue
         # 包含这些内容的一般不是正常章节
         if operator.contains(title, "请假") or operator.contains(title, "感言"):
@@ -176,7 +157,7 @@ def get_list(is_del=9, skip_num=0, flag=False):
             title = title.replace("地", "第")
 
         if flag:
-            title = "第" + getStrNumOrTxt(title) + "章 " + getStrNumOrTxt(title, False)
+            title = "第" + common_func.get_str_num_or_txt(title) + "章 " + common_func.get_str_num_or_txt(title, False)
         row = {
             # 章节下标
             "index": num,
@@ -214,7 +195,7 @@ def split_list(index, target):
 
 # 获取小说名  ps: 也是文件名
 def get_title():
-    bf = get_method_url(url)
+    bf = common_func.get_method_url(url)
     texts = bf.find_all('div', id='info')
     bs = BS(str(texts[0]), 'lxml')
     title = str(bs.find_all('h1')[0].text).replace("<h1>", "")
@@ -291,49 +272,6 @@ def re_try(log_name):
         r_end = time.time()
         print("\nfinished; 耗时：", '%.2f' % ((r_end - start) / 60), "分")
         sys.exit(1)
-
-
-# 判断字符串是否包含中文数字或阿拉伯数字
-def isNumber(string):
-    return bool(re.search(r'[零一二三四五六七八九十百千万]', string)) or bool(re.search(r'\d', string))
-
-
-# 获取字符串里的数字或字符
-# str_type 获取结果类型---->  True:获取数字，False：获取字符串；默认True
-def getStrNumOrTxt(string, str_type=True):
-    if str_type:
-        if isNumber(string):
-            num = re.findall(r"\d+", string)
-            if not num:
-                num = re.findall(r'[零一二三四五六七八九十百千万]+', string)
-            return "".join(num)
-        else:
-            return ""
-    else:
-        num_txt = re.findall(r"\d+", string)
-        if not num_txt:
-            num_txt = re.findall(r'[零一二三四五六七八九十百千万]+', string)
-        for num in num_txt:
-            string = string.replace(num, "")
-        return string.replace("第", "").replace("章", "").replace(" ", "").replace(".", "")
-
-
-# 进度显示
-# i -> 当前数量
-# num -> 总数量
-def sys_progress(i, num):
-    num = num - 1
-    out = '\r正在下载...  {:.2%}'.format(i / num)
-    print(out, end="")
-
-
-# get方法获取网页
-def get_method_url(f_url):
-    r = requests.get(f_url, headers=headers)
-    r.encoding = charset
-    html = r.text
-    bf = BS(html, "lxml")
-    return bf
 
 
 # 其他方法调用下载
