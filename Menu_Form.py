@@ -79,4 +79,3 @@ class Menu_Form(object):
         ui3.setupUi(dialog2, common_func.get_content(raw['href']), self.menu_list.currentIndex().data())
         dialog2.show()
         dialog2.exec_()
-        self.dialog1.show()
