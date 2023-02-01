@@ -1,6 +1,6 @@
 # 公共方法
 
-import requests, re
+import requests, re, time
 from bs4 import BeautifulSoup as BS
 
 # 公共方法集合
@@ -114,3 +114,11 @@ def get_title(href_url):
     bs = bs_html(str(texts[0]))
     title = str(bs.find_all('h1')[0].text).replace("<h1>", "")
     return title.replace("</h1>", "\n")
+
+
+# 打印日志
+def log(*args):
+    file = open("b5200_error_log.txt", 'a')
+    file.write("[" + str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())) + "]:   " + "".join(args) + "\n")
+    file.flush()
+    file.close()

@@ -140,7 +140,7 @@ class Main_View(object):
     def show_menu(self, href_url):
         self.form.hide()
         dialog1 = QtWidgets.QDialog()
-        ui2 = Menu_Form(title_list=title_list, novel_name=common.get_title(href_url))
+        ui2 = Menu_Form(title_list=title_list, novel_name=common.get_title(href_url), href_url=href_url)
         ui2.setupUi(dialog1)
         dialog1.show()
         dialog1.exec_()

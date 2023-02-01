@@ -4,19 +4,21 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QHeaderView, QAbstractItemView
 
-import common_func
+import common_func, b5200_novel_download as nd
 from Read_Model import Read_Model
 
 
 class Menu_Form(object):
 
-    def __init__(self, title_list, novel_name):
+    def __init__(self, title_list, novel_name, href_url):
         # 原始所有目录列表
         self.title_list = title_list
         # 小说名字
         self.novel_name = novel_name
         # 目录列表：第一次点击目录确定是哪一章
         self.menu_data = []
+        # 小说详情页链接
+        self.href_url = href_url
 
     def setupUi(self, Dialog1):
         Dialog1.setObjectName("Dialog1")
@@ -29,6 +31,12 @@ class Menu_Form(object):
         self.menu_tag = QtWidgets.QLabel(Dialog1)
         self.menu_tag.setGeometry(QtCore.QRect(50, 70, 101, 21))
         self.menu_tag.setObjectName("menu_tag")
+
+        self.download_btn = QtWidgets.QPushButton(Dialog1)
+        self.download_btn.setGeometry(QtCore.QRect(690, 70, 75, 23))
+        self.download_btn.setObjectName("download_btn")
+        self.download_btn.clicked.connect(self.download)
+
         self.menu_list = QtWidgets.QTableView(Dialog1)
         self.menu_list.setGeometry(QtCore.QRect(40, 110, 741, 441))
         self.menu_list.setObjectName("menu_list")
@@ -61,6 +69,7 @@ class Menu_Form(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog1.setWindowTitle(_translate("Form", "小说阅读器"))
         self.novel_title.setText(_translate("Form", self.novel_name))
+        self.download_btn.setText(_translate("Form", "下载"))
         self.menu_tag.setText(_translate("Form", "目录"))
 
     # 打开阅读界面
@@ -79,3 +88,6 @@ class Menu_Form(object):
         ui3.setupUi(dialog2, common_func.get_content(raw['href']), self.menu_list.currentIndex().data())
         dialog2.show()
         dialog2.exec_()
+
+    def download(self):
+        nd.third_download(self.href_url)

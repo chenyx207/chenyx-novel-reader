@@ -1,3 +1,5 @@
+# 下载方法
+
 import time, operator, os, json, sys, common_func
 from bs4 import BeautifulSoup as BS
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -33,8 +35,6 @@ directory = 0
 file_name = ''
 # 特殊字符数组，按照已经存入的格式新增
 sp_string = ["\ufffd", "\u2660", "\u2665", "\u200c", "\xa0"]
-# 开始时间
-start = 0
 
 
 # 多线程下载小说
@@ -87,12 +87,10 @@ def thread_download(threads=100, target_list=None, error_time=10):
     try:
         write_txt(file_name, file_list)
     except Exception as e:
-        print("导出文件错误：", e)
+        common_func.log("导出文件错误：", e)
         # 导出文件时错误 将数据转为字符串直接写入文件
         write_txt(file_name + "_error_record_log", '|,|'.join(json.dumps(v) for v in file_list))
-        print("===>>>特殊字符编码错误，请根据错误提示将特殊字符加入到全局变量 sp_string 中再重试；其他错误请修改代码再重试...", "\n错误：", e)
-        t_end = time.time()
-        print("\nfinished; 耗时：", '%.2f' % ((t_end - start) / 60), "分")
+        common_func.log("===>>>特殊字符编码错误，请根据错误提示将特殊字符加入到全局变量 sp_string 中再重试；其他错误请修改代码再重试...", "\n错误：", e)
         sys.exit(1)
         # re_try(file_name + "_error_record_log")
 
@@ -258,37 +256,32 @@ def re_try(log_name):
         write_txt(file_name, re_file_list)
         # 导出成功, 删除错误记录文件
         os.remove(log_name + ".txt")
-        r_end = time.time()
-        print("\nfinished; 耗时：", '%.2f' % ((r_end - start) / 60), "分")
         # 成功后正常退出程序
         sys.exit(0)
     except UnicodeEncodeError as ue:
-        print("特殊字符编码错误，请根据错误提示将特殊字符加入到全局变量 sp_string 中，再重试...", "\n错误：", ue)
-        r_end = time.time()
-        print("\nfinished; 耗时：", '%.2f' % ((r_end - start) / 60), "分")
+        common_func.log("特殊字符编码错误，请根据错误提示将特殊字符加入到全局变量 sp_string 中，再重试...", "\n错误：", ue)
         sys.exit(1)
     except Exception as e:
-        print("重试失败，请根据错误提示修改代码，再重试...", "\n错误：", e)
-        r_end = time.time()
-        print("\nfinished; 耗时：", '%.2f' % ((r_end - start) / 60), "分")
+        common_func.log("重试失败，请根据错误提示修改代码，再重试...", "\n错误：", e)
         sys.exit(1)
 
 
 # 其他方法调用下载
-def third_download(url_href, threads, flag=False):
+def third_download(url_href, threads=100, flag=False):
     global url
     url = url_href
+    # 先调用重试方法，是否有错误记录；没有再爬取内容
+    re_try(file_name + "_error_record_log")
     get_title()
     get_list(flag=flag)
     thread_download(threads=threads, target_list=title_list)
 
-
-if __name__ == '__main__':
-    start = time.time()
-    get_title()
-    # 先调用重试方法，是否有错误记录；没有再爬取内容
-    re_try(file_name + "_error_record_log")
-    get_list()
-    thread_download(target_list=title_list)
-    end = time.time()
-    print("\nfinished; 耗时：", '%.2f' % ((end - start) / 60), "分")
+# if __name__ == '__main__':
+#     start = time.time()
+#     get_title()
+#     # 先调用重试方法，是否有错误记录；没有再爬取内容
+#     re_try(file_name + "_error_record_log")
+#     get_list()
+#     thread_download(target_list=title_list)
+#     end = time.time()
+#     print("\nfinished; 耗时：", '%.2f' % ((end - start) / 60), "分")
