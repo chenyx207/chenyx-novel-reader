@@ -1,7 +1,7 @@
 # 阅读界面
 
 from PyQt5 import QtCore, QtWidgets
-import common_func
+import common
 
 
 class Read_Model(object):
@@ -55,7 +55,7 @@ class Read_Model(object):
         href, title = self.get_near_chapter(0)
         if str(href).__eq__(""):
             return
-        bf = common_func.get_method_url(href)
+        bf = common.get_method_url(href)
         texts = bf.find_all('div', id='content')
         ac = []
         for k in range(len(texts[0].contents)):
@@ -67,14 +67,14 @@ class Read_Model(object):
         self.chapter.clear()
         self.chapter.setText(title)
         self.content.clear()
-        self.content.setText(common_func.deal_novel_content(content))
+        self.content.setText(common.deal_novel_content(content))
 
     # 下一章
     def next_btn_func(self):
         href, title = self.get_near_chapter(1)
         if str(href).__eq__(""):
             return
-        bf = common_func.get_method_url(href)
+        bf = common.get_method_url(href)
         texts = bf.find_all('div', id='content')
         ac = []
         for k in range(len(texts[0].contents)):
@@ -86,7 +86,7 @@ class Read_Model(object):
         self.chapter.clear()
         self.chapter.setText(title)
         self.content.clear()
-        self.content.setText(common_func.deal_novel_content(content))
+        self.content.setText(common.deal_novel_content(content))
 
     # 获取临近章节下标，0-上一章、1-下一章
     def get_near_chapter(self, near=0):

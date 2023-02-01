@@ -1,5 +1,5 @@
-import sys, common_func as common
-from Menu_Form import Menu_Form
+import sys, common as common
+from MenuForm import Menu_Form
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem

@@ -4,8 +4,8 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QHeaderView, QAbstractItemView
 
-import common_func, b5200_novel_download as nd
-from Read_Model import Read_Model
+import common, b5200_novel_download as nd
+from ReadModel import Read_Model
 
 
 class Menu_Form(object):
@@ -42,7 +42,7 @@ class Menu_Form(object):
         self.menu_list.setObjectName("menu_list")
 
         # 获取列数, 分割后的数组
-        column, res = common_func.split_title(self.title_list, 4)
+        column, res = common.split_title(self.title_list, 4)
         model = QStandardItemModel(column, 4)
         if res:
             for i in range(column):
@@ -85,7 +85,7 @@ class Menu_Form(object):
             print("获取章节错误：", e)
             return
         ui3 = Read_Model(title_list=self.title_list, novel_name=self.novel_name, current_chap=current_chap)
-        ui3.setupUi(dialog2, common_func.get_content(raw['href']), self.menu_list.currentIndex().data())
+        ui3.setupUi(dialog2, common.get_content(raw['href']), self.menu_list.currentIndex().data())
         dialog2.show()
         dialog2.exec_()
 

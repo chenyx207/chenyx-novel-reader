@@ -1,6 +1,6 @@
 # 下载方法
 
-import time, operator, os, json, sys, common_func
+import time, operator, os, json, sys, common
 from bs4 import BeautifulSoup as BS
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -87,10 +87,10 @@ def thread_download(threads=100, target_list=None, error_time=10):
     try:
         write_txt(file_name, file_list)
     except Exception as e:
-        common_func.log("导出文件错误：", e)
+        common.log("导出文件错误：", e)
         # 导出文件时错误 将数据转为字符串直接写入文件
         write_txt(file_name + "_error_record_log", '|,|'.join(json.dumps(v) for v in file_list))
-        common_func.log("===>>>特殊字符编码错误，请根据错误提示将特殊字符加入到全局变量 sp_string 中再重试；其他错误请修改代码再重试...", "\n错误：", e)
+        common.log("===>>>特殊字符编码错误，请根据错误提示将特殊字符加入到全局变量 sp_string 中再重试；其他错误请修改代码再重试...", "\n错误：", e)
         sys.exit(1)
         # re_try(file_name + "_error_record_log")
 
@@ -105,7 +105,7 @@ def download_partner(target_list):
             index = target['index']  # 章节序号
             title = target['title']  # 章节标题
             href = target['href']  # 章节内容链接
-            bf = common_func.get_method_url(href)
+            bf = common.get_method_url(href)
             texts = bf.find_all('div', id='content')
             ac = [title]
             for k in range(len(texts[0].contents)):
@@ -117,12 +117,12 @@ def download_partner(target_list):
 
             row = {
                 "index": index,
-                "txt": common_func.deal_novel_content(content)
+                "txt": common.deal_novel_content(content)
             }
             f_list.append(row)
             success_num += 1
             # 进度显示
-            common_func.sys_progress(success_num, directory)
+            common.sys_progress(success_num, directory)
         except Exception:
             error_list.append(target)
         time.sleep(1)
@@ -134,7 +134,7 @@ def download_partner(target_list):
 # skip_num -> 删除前面的目录后跳过多少个章节  ps: 跳过前面多余的章节，如果前面已经爬过这篇小说且有备份的话，可以跳过已经爬过的章节数，只爬取未爬过的章节，然后手动将两篇合在一起
 # flag -> 是否重新组装章节数和章节名   ps: 有的小说的章节数奇奇怪怪的，不是正常的’第...章‘这种格式，所以需要提取章节里面的数字和章节名重新组装，不然txt格式的话掌阅这种软件就识别不了目录，就没有目录
 def get_list(is_del=9, skip_num=0, flag=False):
-    bf = common_func.get_method_url(url)
+    bf = common.get_method_url(url)
     texts = bf.find_all('div', id='list')
     bf = BS(str(texts[0]), "lxml")
     texts = bf.find_all('a')
@@ -146,7 +146,7 @@ def get_list(is_del=9, skip_num=0, flag=False):
     for ac in texts:
         title = str(ac.text)
         # 判断标题是否包含数字
-        if not common_func.is_number(title):
+        if not common.is_number(title):
             continue
         # 包含这些内容的一般不是正常章节
         if operator.contains(title, "请假") or operator.contains(title, "感言"):
@@ -155,7 +155,7 @@ def get_list(is_del=9, skip_num=0, flag=False):
             title = title.replace("地", "第")
 
         if flag:
-            title = "第" + common_func.get_str_num_or_txt(title) + "章 " + common_func.get_str_num_or_txt(title, False)
+            title = "第" + common.get_str_num_or_txt(title) + "章 " + common.get_str_num_or_txt(title, False)
         row = {
             # 章节下标
             "index": num,
@@ -193,7 +193,7 @@ def split_list(index, target):
 
 # 获取小说名  ps: 也是文件名
 def get_title():
-    bf = common_func.get_method_url(url)
+    bf = common.get_method_url(url)
     texts = bf.find_all('div', id='info')
     bs = BS(str(texts[0]), 'lxml')
     title = str(bs.find_all('h1')[0].text).replace("<h1>", "")
@@ -259,10 +259,10 @@ def re_try(log_name):
         # 成功后正常退出程序
         sys.exit(0)
     except UnicodeEncodeError as ue:
-        common_func.log("特殊字符编码错误，请根据错误提示将特殊字符加入到全局变量 sp_string 中，再重试...", "\n错误：", ue)
+        common.log("特殊字符编码错误，请根据错误提示将特殊字符加入到全局变量 sp_string 中，再重试...", "\n错误：", ue)
         sys.exit(1)
     except Exception as e:
-        common_func.log("重试失败，请根据错误提示修改代码，再重试...", "\n错误：", e)
+        common.log("重试失败，请根据错误提示修改代码，再重试...", "\n错误：", e)
         sys.exit(1)
 
 
