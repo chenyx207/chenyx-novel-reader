@@ -1,4 +1,4 @@
-# ÔÄ¶Á½çÃæ
+# é˜…è¯»ç•Œé¢
 
 from PyQt5 import QtCore, QtWidgets
 import common_func
@@ -7,11 +7,11 @@ import common_func
 class Read_Model(object):
 
     def __init__(self, title_list, novel_name, current_chap):
-        # Ô­Ê¼Ä¿Â¼ÁĞ±í
+        # åŸå§‹ç›®å½•åˆ—è¡¨
         self.title_list = title_list
-        # Ğ¡Ëµ±êÌâ
+        # å°è¯´æ ‡é¢˜
         self.novel_name = novel_name
-        # µ±Ç°ÕÂ½Ú
+        # å½“å‰ç« èŠ‚
         self.current_chap = current_chap
 
     def setupUi(self, Dialog2, content, chapter):
@@ -44,13 +44,13 @@ class Read_Model(object):
 
     def retranslateUi(self, Dialog2, chapter):
         _translate = QtCore.QCoreApplication.translate
-        Dialog2.setWindowTitle(_translate("Form", "Ğ¡ËµÔÄ¶ÁÆ÷"))
+        Dialog2.setWindowTitle(_translate("Form", "å°è¯´é˜…è¯»å™¨"))
         self.novel_title_2.setText(_translate("Form", self.novel_name))
         self.chapter.setText(_translate("Form", chapter))
-        self.last_btn.setText(_translate("Form", "ÉÏÒ»ÕÂ"))
-        self.next_btn.setText(_translate("Form", "ÏÂÒ»ÕÂ"))
+        self.last_btn.setText(_translate("Form", "ä¸Šä¸€ç« "))
+        self.next_btn.setText(_translate("Form", "ä¸‹ä¸€ç« "))
 
-    # ÉÏÒ»ÕÂ
+    # ä¸Šä¸€ç« 
     def last_btn_func(self):
         href, title = self.get_near_chapter(0)
         if str(href).__eq__(""):
@@ -69,7 +69,7 @@ class Read_Model(object):
         self.content.clear()
         self.content.setText(common_func.deal_novel_content(content))
 
-    # ÏÂÒ»ÕÂ
+    # ä¸‹ä¸€ç« 
     def next_btn_func(self):
         href, title = self.get_near_chapter(1)
         if str(href).__eq__(""):
@@ -88,7 +88,7 @@ class Read_Model(object):
         self.content.clear()
         self.content.setText(common_func.deal_novel_content(content))
 
-    # »ñÈ¡ÁÙ½üÕÂ½ÚÏÂ±ê£¬0-ÉÏÒ»ÕÂ¡¢1-ÏÂÒ»ÕÂ
+    # è·å–ä¸´è¿‘ç« èŠ‚ä¸‹æ ‡ï¼Œ0-ä¸Šä¸€ç« ã€1-ä¸‹ä¸€ç« 
     def get_near_chapter(self, near=0):
         max_chap = len(self.title_list) - 1
         if self.current_chap == max_chap and near == 1:

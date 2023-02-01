@@ -1,4 +1,4 @@
-# Ä¿Â¼½çÃæ
+# ç›®å½•ç•Œé¢
 
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -11,11 +11,11 @@ from Read_Model import Read_Model
 class Menu_Form(object):
 
     def __init__(self, title_list, novel_name):
-        # Ô­Ê¼ËùÓĞÄ¿Â¼ÁĞ±í
+        # åŸå§‹æ‰€æœ‰ç›®å½•åˆ—è¡¨
         self.title_list = title_list
-        # Ğ¡ËµÃû×Ö
+        # å°è¯´åå­—
         self.novel_name = novel_name
-        # Ä¿Â¼ÁĞ±í£ºµÚÒ»´Îµã»÷Ä¿Â¼È·¶¨ÊÇÄÄÒ»ÕÂ
+        # ç›®å½•åˆ—è¡¨ï¼šç¬¬ä¸€æ¬¡ç‚¹å‡»ç›®å½•ç¡®å®šæ˜¯å“ªä¸€ç« 
         self.menu_data = []
 
     def setupUi(self, Dialog1):
@@ -33,12 +33,12 @@ class Menu_Form(object):
         self.menu_list.setGeometry(QtCore.QRect(40, 110, 741, 441))
         self.menu_list.setObjectName("menu_list")
 
-        # »ñÈ¡ÁĞÊı
-        column = common_func.split_title(self.title_list, 4)
+        # è·å–åˆ—æ•°, åˆ†å‰²åçš„æ•°ç»„
+        column, res = common_func.split_title(self.title_list, 4)
         model = QStandardItemModel(column, 4)
-        if self.menu_list:
+        if res:
             for i in range(column):
-                row = self.menu_list[i]
+                row = res[i]
                 index = []
                 for c in range(len(row)):
                     row1 = row[c]
@@ -46,11 +46,11 @@ class Menu_Form(object):
                     index.append(row1)
                 self.menu_data.append(index)
             self.menu_list.setModel(model)
-            # Ë®Æ½·½Ïò±êÇ©ÍØÕ¹Ê£ÏÂµÄ´°¿Ú²¿·Ö£¬ÌîÂú±í¸ñ
+            # æ°´å¹³æ–¹å‘æ ‡ç­¾æ‹“å±•å‰©ä¸‹çš„çª—å£éƒ¨åˆ†ï¼Œå¡«æ»¡è¡¨æ ¼
             self.menu_list.horizontalHeader().setStretchLastSection(True)
-            # Ë®Æ½·½Ïò£¬±í¸ñ´óĞ¡ÍØÕ¹µ½ÊÊµ±µÄ³ß´ç
+            # æ°´å¹³æ–¹å‘ï¼Œè¡¨æ ¼å¤§å°æ‹“å±•åˆ°é€‚å½“çš„å°ºå¯¸
             self.menu_list.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-            # ÉèÖÃ±í¸ñÄÚÈİ²»¿É±à¼­
+            # è®¾ç½®è¡¨æ ¼å†…å®¹ä¸å¯ç¼–è¾‘
             self.menu_list.setEditTriggers(QAbstractItemView.NoEditTriggers)
             self.menu_list.clicked.connect(self.show_chapter)
 
@@ -59,11 +59,11 @@ class Menu_Form(object):
 
     def retranslateUi(self, Dialog1):
         _translate = QtCore.QCoreApplication.translate
-        Dialog1.setWindowTitle(_translate("Form", "Ğ¡ËµÔÄ¶ÁÆ÷"))
+        Dialog1.setWindowTitle(_translate("Form", "å°è¯´é˜…è¯»å™¨"))
         self.novel_title.setText(_translate("Form", self.novel_name))
-        self.menu_tag.setText(_translate("Form", "Ä¿Â¼"))
+        self.menu_tag.setText(_translate("Form", "ç›®å½•"))
 
-    # ´ò¿ªÔÄ¶Á½çÃæ
+    # æ‰“å¼€é˜…è¯»ç•Œé¢
     def show_chapter(self):
         self.dialog1.hide()
         dialog2 = QtWidgets.QDialog()
@@ -73,7 +73,7 @@ class Menu_Form(object):
             raw = self.menu_data[row][column]
             current_chap = raw['index']
         except Exception as e:
-            print("»ñÈ¡ÕÂ½Ú´íÎó£º", e)
+            print("è·å–ç« èŠ‚é”™è¯¯ï¼š", e)
             return
         ui3 = Read_Model(title_list=self.title_list, novel_name=self.novel_name, current_chap=current_chap)
         ui3.setupUi(dialog2, common_func.get_content(raw['href']), self.menu_list.currentIndex().data())

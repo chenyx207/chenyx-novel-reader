@@ -1,68 +1,68 @@
-# ¹«¹²·½·¨
+# å…¬å…±æ–¹æ³•
 
 import requests, re
 from bs4 import BeautifulSoup as BS
 
-# ¹«¹²·½·¨¼¯ºÏ
+# å…¬å…±æ–¹æ³•é›†åˆ
 headers = {'User-Agent': 'Mozilla/5.0',
            'Content-Type': 'gbk'}
 charset = "gbk"
 
 
-# ÅĞ¶Ï×Ö·û´®ÊÇ·ñ°üº¬ÖĞÎÄÊı×Ö»ò°¢À­²®Êı×Ö
+# åˆ¤æ–­å­—ç¬¦ä¸²æ˜¯å¦åŒ…å«ä¸­æ–‡æ•°å­—æˆ–é˜¿æ‹‰ä¼¯æ•°å­—
 def is_number(string):
-    return bool(re.search(r'[ÁãÒ»¶şÈıËÄÎåÁùÆß°Ë¾ÅÊ®°ÙÇ§Íò]', string)) or bool(re.search(r'\d', string))
+    return bool(re.search(r'[é›¶ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒä¸‡]', string)) or bool(re.search(r'\d', string))
 
 
-# ´¦ÀíĞ¡ËµÕÂ½ÚÕıÎÄÄÚÈİ
+# å¤„ç†å°è¯´ç« èŠ‚æ­£æ–‡å†…å®¹
 def deal_novel_content(content):
     enter_count = content.count("\n")
     if enter_count < 10:
         content1 = content
-        if str(content).__contains__("¡£"):
-            content1 = content1.replace("¡£", "¡£\n\n¡¡¡¡")
-        if str(content).__contains__("¡±"):
-            content1 = content1.replace("¡±", "¡±\n\n¡¡¡¡")
+        if str(content).__contains__("ã€‚"):
+            content1 = content1.replace("ã€‚", "ã€‚\n\nã€€ã€€")
+        if str(content).__contains__("â€"):
+            content1 = content1.replace("â€", "â€\n\nã€€ã€€")
         if str(content).__contains__("!"):
-            content1 = content1.replace("!", "!\n\n¡¡¡¡")
-        if str(content).__contains__("¡¿"):
-            content1 = content1.replace("¡¿", "¡¿\n\n¡¡¡¡")
-        if str(content1).__contains__("¡£\n\n¡¡¡¡¡±"):
-            content1 = content1.replace("¡£\n\n¡¡¡¡¡±", "¡£¡±")
+            content1 = content1.replace("!", "!\n\nã€€ã€€")
+        if str(content).__contains__("ã€‘"):
+            content1 = content1.replace("ã€‘", "ã€‘\n\nã€€ã€€")
+        if str(content1).__contains__("ã€‚\n\nã€€ã€€â€"):
+            content1 = content1.replace("ã€‚\n\nã€€ã€€â€", "ã€‚â€")
         return content1
     return content
 
 
-# »ñÈ¡×Ö·û´®ÀïµÄÊı×Ö»ò×Ö·û
-# str_type »ñÈ¡½á¹ûÀàĞÍ---->  True:»ñÈ¡Êı×Ö£¬False£º»ñÈ¡×Ö·û´®£»Ä¬ÈÏTrue
+# è·å–å­—ç¬¦ä¸²é‡Œçš„æ•°å­—æˆ–å­—ç¬¦
+# str_type è·å–ç»“æœç±»å‹---->  True:è·å–æ•°å­—ï¼ŒFalseï¼šè·å–å­—ç¬¦ä¸²ï¼›é»˜è®¤True
 def get_str_num_or_txt(string, str_type=True):
     if str_type:
         if is_number(string):
             num = re.findall(r"\d+", string)
             if not num:
-                num = re.findall(r'[ÁãÒ»¶şÈıËÄÎåÁùÆß°Ë¾ÅÊ®°ÙÇ§Íò]+', string)
+                num = re.findall(r'[é›¶ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒä¸‡]+', string)
             return "".join(num)
         else:
             return ""
     else:
         num_txt = re.findall(r"\d+", string)
         if not num_txt:
-            num_txt = re.findall(r'[ÁãÒ»¶şÈıËÄÎåÁùÆß°Ë¾ÅÊ®°ÙÇ§Íò]+', string)
+            num_txt = re.findall(r'[é›¶ä¸€äºŒä¸‰å››äº”å…­ä¸ƒå…«ä¹åç™¾åƒä¸‡]+', string)
         for num in num_txt:
             string = string.replace(num, "")
-        return string.replace("µÚ", "").replace("ÕÂ", "").replace(" ", "").replace(".", "")
+        return string.replace("ç¬¬", "").replace("ç« ", "").replace(" ", "").replace(".", "")
 
 
-# ½ø¶ÈÏÔÊ¾
-# i -> µ±Ç°ÊıÁ¿
-# num -> ×ÜÊıÁ¿
+# è¿›åº¦æ˜¾ç¤º
+# i -> å½“å‰æ•°é‡
+# num -> æ€»æ•°é‡
 def sys_progress(i, num):
     num = num - 1
-    out = '\rÕıÔÚÏÂÔØ...  {:.2%}'.format(i / num)
+    out = '\ræ­£åœ¨ä¸‹è½½...  {:.2%}'.format(i / num)
     print(out, end="")
 
 
-# get·½·¨»ñÈ¡ÍøÒ³
+# getæ–¹æ³•è·å–ç½‘é¡µ
 def get_method_url(f_url):
     r = requests.get(f_url, headers=headers)
     r.encoding = charset
@@ -71,12 +71,12 @@ def get_method_url(f_url):
     return bf
 
 
-# ÓÃBS4½âÎöÍøÒ³
+# ç”¨BS4è§£æç½‘é¡µ
 def bs_html(html):
     return BS(html, "lxml")
 
 
-# »ñÈ¡ÕÂ½ÚÄÚÈİ
+# è·å–ç« èŠ‚å†…å®¹
 def get_content(content_url):
     bf = get_method_url(content_url)
     texts = bf.find_all('div', id='content')
@@ -90,7 +90,7 @@ def get_content(content_url):
     return deal_novel_content(content)
 
 
-# ·Ö¸îÊı×é
+# åˆ†å‰²æ•°ç»„
 def split_title(title_list, index):
     total = len(title_list)
     res = []
@@ -104,10 +104,10 @@ def split_title(title_list, index):
         if i != 0:
             result = title_list[(i - 1) * index:i * index]
             res.append(result)
-    return column
+    return column, res
 
 
-# »ñÈ¡Ğ¡Ëµ±êÌâ
+# è·å–å°è¯´æ ‡é¢˜
 def get_title(href_url):
     bf = get_method_url(href_url)
     texts = bf.find_all('div', id='info')
