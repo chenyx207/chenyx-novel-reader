@@ -1,91 +1,62 @@
 # _*_coding: UTF-8_*_
-# ¿ª·¢×÷Õß £ºTXH
-# ¿ª·¢Ê±¼ä £º2020-09-08 10:20
-# ÎÄ¼şÃû³Æ £ºQt_Processbar.py
-# ¿ª·¢¹¤¾ß £ºPython 3.7 + Pycharm IDE
+# å¼€å‘ä½œè€… ï¼šTXH
+# å¼€å‘æ—¶é—´ ï¼š2020-09-08 10:20
+# æ–‡ä»¶åç§° ï¼šQt_Processbar.py
+# å¼€å‘å·¥å…· ï¼šPython 3.7 + Pycharm IDE
 
-from PyQt5.QtWidgets import QApplication, QWidget, QDialog, QLabel, QLineEdit, QProgressBar, \
-    QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QDialogButtonBox
-from PyQt5.QtCore import Qt, QBasicTimer, QThread, QRect
-import sys
+from PyQt5.QtWidgets import QApplication, QDialog, QProgressBar
+from PyQt5.QtCore import QRect
+import sys, time
 
 
 class ProgressBar(QDialog):
     def __init__(self, parent=None):
         super(ProgressBar, self).__init__(parent)
 
-        # Qdialog´°ÌåµÄÉèÖÃ
-        self.resize(500, 32)  # QDialog´°µÄ´óĞ¡
+        # Qdialogçª—ä½“çš„è®¾ç½®
+        self.resize(500, 32)  # QDialogçª—çš„å¤§å°
 
-        # ´´½¨²¢ÉèÖÃ QProcessbar
-        self.progressBar = QProgressBar(self)  # ´´½¨
-        self.progressBar.setMinimum(0)  # ÉèÖÃ½ø¶ÈÌõ×îĞ¡Öµ
-        self.progressBar.setMaximum(100)  # ÉèÖÃ½ø¶ÈÌõ×î´óÖµ
-        self.progressBar.setValue(0)  # ½ø¶ÈÌõ³õÊ¼ÖµÎª0
-        self.progressBar.setGeometry(QRect(1, 3, 499, 28))  # ÉèÖÃ½ø¶ÈÌõÔÚ QDialog ÖĞµÄÎ»ÖÃ [×ó£¬ÉÏ£¬ÓÒ£¬ÏÂ]
+        # åˆ›å»ºå¹¶è®¾ç½® QProcessbar
+        self.progressBar = QProgressBar(self)  # åˆ›å»º
+        self.progressBar.setMinimum(0)  # è®¾ç½®è¿›åº¦æ¡æœ€å°å€¼
+        self.progressBar.setMaximum(100)  # è®¾ç½®è¿›åº¦æ¡æœ€å¤§å€¼
+        self.progressBar.setValue(0)  # è¿›åº¦æ¡åˆå§‹å€¼ä¸º0
+        self.progressBar.setGeometry(QRect(1, 3, 499, 28))  # è®¾ç½®è¿›åº¦æ¡åœ¨ QDialog ä¸­çš„ä½ç½® [å·¦ï¼Œä¸Šï¼Œå³ï¼Œä¸‹]
         self.show()
 
-    def setValue(self, task_number, total_task_number, value):  # ÉèÖÃ×ÜÈÎÎñ½ø¶ÈºÍ×ÓÈÎÎñ½ø¶È
+    def setValue(self, task_number, total_task_number):  # è®¾ç½®æ€»ä»»åŠ¡è¿›åº¦å’Œå­ä»»åŠ¡è¿›åº¦
         if task_number == '0' and total_task_number == '0':
-            self.setWindowTitle(self.tr('ÕıÔÚ´¦ÀíÖĞ'))
+            self.setWindowTitle(self.tr('æ­£åœ¨ä¸‹è½½ä¸­'))
         else:
-            label = "ÕıÔÚ´¦Àí£º" + "µÚ" + str(task_number) + "/" + str(total_task_number) + '¸öÈÎÎñ'
-            self.setWindowTitle(self.tr(label))  # ¶¥²¿µÄ±êÌâ
-        self.progressBar.setValue(value)
+            label = "æ­£åœ¨ä¸‹è½½ï¼š" + "ç¬¬" + str(task_number) + "/" + str(total_task_number) + 'ä¸ªç« èŠ‚'
+            self.setWindowTitle(self.tr(label))  # é¡¶éƒ¨çš„æ ‡é¢˜
+        self.progressBar.setValue(int(task_number))
 
 
 class pyqtbar():
-    '''
-    task_numberºÍ total_task_number¶¼Îª 0 Ê±£¬²»ÏÔÊ¾µ±Ç°½øĞĞµÄÈÎÎñÇé¿ö
-    task_number<total_task_number ¶¼ÎªÕûÊı£¬´íÎóµÄÉèÖÃ½«³öÏÖ´íÎóÏÔÊ¾£¬ÔİÎ´ÉèÖÃ±¨´í¾¯¸æ
-
-    # Ê¹ÓÃÊ¾Àı
-    import time
-    bar = pyqtbar() # ´´½¨ÊµÀı
-    total_number=10
-    # ÈÎÎñ1
-    task_id=1
-    for process in range(1, 100):
-        time.sleep(0.05)
-        bar.set_value(task_id,total_number,process) # Ë¢ĞÂ½ø¶ÈÌõ
-    # ÈÎÎñ2
-    task_id = 2
-    for process in range(1, 100):
-        time.sleep(0.05)
-        bar.set_value(task_id, total_number,process)
-    bar.close # ¹Ø±Õ bar ºÍ app
-    '''
-
     def __init__(self):
-        self.app = QApplication(sys.argv)  # ´ò¿ªÏµÍ³ app
-        self.progressbar = ProgressBar()  # ³õÊ¼»¯ ProcessBarÊµÀı
+        self.app = QApplication(sys.argv)  # æ‰“å¼€ç³»ç»Ÿ app
+        self.progressbar = ProgressBar()  # åˆå§‹åŒ– ProcessBarå®ä¾‹
 
-    def set_value(self, task_number, total_task_number, i):
-        self.progressbar.setValue(str(task_number), str(total_task_number), i + 1)  # ¸üĞÂ½ø¶ÈÌõµÄÖµ
-        QApplication.processEvents()  # ÊµÊ±Ë¢ĞÂÏÔÊ¾
+    def set_value(self, task_number, total_task_number):
+        self.progressbar.setValue(str(task_number), str(total_task_number))  # æ›´æ–°è¿›åº¦æ¡çš„å€¼
+        QApplication.processEvents()  # å®æ—¶åˆ·æ–°æ˜¾ç¤º
 
     @property
     def close(self):
-        self.progressbar.close()  # ¹Ø±Õ½ø¶ÈÌõ
-        self.app.exit()  # ¹Ø±ÕÏµÍ³ app
+        self.progressbar.close()  # å…³é—­è¿›åº¦æ¡
+        self.app.exit()  # å…³é—­ç³»ç»Ÿ app
+
+
+# total_number    æ€»ä»»åŠ¡æ•°
+# task_id         å­ä»»åŠ¡åºå·
+def third_open(task_id, total_number):
+    bar = pyqtbar()  # åˆ›å»ºå®ä¾‹
+    for process in range(task_id, total_number):
+        bar.set_value(task_id, total_number)  # åˆ·æ–°è¿›åº¦æ¡
+    if task_id >= total_number:
+        bar.close  # å…³é—­ bar å’Œ app
 
 
 if __name__ == '__main__':
-
-    import time
-
-    # Ê¹ÓÃÊ¾Àı
-    bar = pyqtbar()  # ´´½¨ÊµÀı
-    total_number = 10  # ×ÜÈÎÎñÊı
-    # ÈÎÎñ1
-    task_id = 1  # ×ÓÈÎÎñĞòºÅ
-    for process in range(1, 100):
-        time.sleep(0.05)
-        bar.set_value(task_id, total_number, process)  # Ë¢ĞÂ½ø¶ÈÌõ
-    # ÈÎÎñ2
-    task_id = 2
-    for process in range(1, 100):
-        time.sleep(0.05)
-        bar.set_value(task_id, total_number, process)
-
-    bar.close  # ¹Ø±Õ bar ºÍ app
+    third_open(1, 100)

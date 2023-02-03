@@ -125,7 +125,7 @@ def download_partner(target_list):
             common.sys_progress(success_num, directory)
         except Exception:
             error_list.append(target)
-        time.sleep(1)
+        time.sleep(0.1)
     return f_list
 
 

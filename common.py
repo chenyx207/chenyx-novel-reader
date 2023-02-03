@@ -2,6 +2,7 @@
 
 import requests, re, time
 from bs4 import BeautifulSoup as BS
+from ProgressBar import third_open
 
 # 公共方法集合
 headers = {'User-Agent': 'Mozilla/5.0',
@@ -58,8 +59,9 @@ def get_str_num_or_txt(string, str_type=True):
 # num -> 总数量
 def sys_progress(i, num):
     num = num - 1
-    out = '\r正在下载...  {:.2%}'.format(i / num)
-    print(out, end="")
+    third_open(i, num)
+    # out = '\r正在下载...  {:.2%}'.format(i / num)
+    # print(out, end="")
 
 
 # get方法获取网页
