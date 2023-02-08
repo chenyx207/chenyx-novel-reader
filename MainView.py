@@ -134,8 +134,6 @@ class Main_View(object):
             num += 1
         self.show_menu(href_url)
 
-    # 获取小说标题
-
     # 打开目录界面
     def show_menu(self, href_url):
         self.form.hide()

@@ -4,7 +4,8 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QHeaderView, QAbstractItemView
 
-import common, b5200_novel_download as nd
+import common
+from ProgressBar import Runthread, pyqtbar
 from ReadModel import Read_Model
 
 
@@ -90,4 +91,6 @@ class Menu_Form(object):
         dialog2.exec_()
 
     def download(self):
-        nd.third_download(self.href_url)
+        work = Runthread(self.href_url)
+        bar = pyqtbar(work, len(self.title_list))
+        bar.close
