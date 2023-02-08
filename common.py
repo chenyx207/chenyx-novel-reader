@@ -5,7 +5,8 @@ from bs4 import BeautifulSoup as BS
 
 # 公共方法集合
 headers = {'User-Agent': 'Mozilla/5.0',
-           'Content-Type': 'gbk'}
+           'Content-Type': 'gbk',
+           'Connection': 'close'}
 charset = "gbk"
 
 
