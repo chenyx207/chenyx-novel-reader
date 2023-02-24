@@ -179,18 +179,18 @@ def re_try(log_name):
 
 class ProcessBar(QtWidgets.QWidget):
 
-    def __init__(self, work, maximum):
+    def __init__(self, maximum, href_url):
         super().__init__()
-        self.work = work
+        global url
+        url = href_url
+        self.work = Runthread()
         self.maximum = maximum
-        self.run_work()
+        # self.run_work()
 
-    def run_work(self):
+    def run_work(self, dialog3):
         # 创建线程
         # 连接信号
         self.work._signal.connect(self.call_backlog)  # 进程连接回传到GUI的事件
-        # 开始线程
-        self.work.start()
 
         # 进度条设置
         self.pbar = QtWidgets.QProgressBar(self)
@@ -202,7 +202,9 @@ class ProcessBar(QtWidgets.QWidget):
         # 窗口初始化
         self.setGeometry(300, 300, 500, 32)
         self.setWindowTitle('正在连接')
-        self.show()
+
+        # 开始线程
+        self.work.start()
 
     def call_backlog(self, task_number, total_task_number):
         if task_number == 0 and total_task_number == 0:
@@ -212,18 +214,21 @@ class ProcessBar(QtWidgets.QWidget):
             self.setWindowTitle(self.tr(label))  # 顶部的标题
         self.pbar.setValue(int(task_number))  # 将线程的参数传入进度条
 
+    def close(self):
+        self.work.exit()
+
+
 
 class pyqtbar():
-    def __init__(self, work, maximum):
+    def __init__(self, maximum, href_url):
         self.app = QtWidgets.QApplication(sys.argv)
-        self.myshow = ProcessBar(work, maximum=maximum)
+        self.myshow = ProcessBar(maximum=maximum, href_url=href_url)
         self.myshow.show()
         sys.exit(self.app.exec_())
 
-    @property
     def close(self):
         self.myshow.close()
-        self.app.exit()
+        self.app.close()
 
 
 # 继承QThread
@@ -231,20 +236,14 @@ class Runthread(QThread):
     #  通过类成员对象定义信号对象
     _signal = pyqtSignal(int, int)
 
-    def __init__(self, href_url):
+    def __init__(self):
         super(Runthread, self).__init__()
-        self.href_url = href_url
 
     def run(self):
-        global url
-        url = self.href_url
         # 先调用重试方法，是否有错误记录；没有再爬取内容
         re_try(file_name + "_error_record_log")
-        try:
-            get_title()
-            get_list(flag=False)
-        except:
-            sys.exit(bar.app.exec_())
+        get_title()
+        get_list(flag=False)
         self.thread_download(threads=100, target_list=title_list)
 
     # 多线程下载小说
@@ -341,5 +340,5 @@ class Runthread(QThread):
 
 
 if __name__ == "__main__":
-    work = Runthread("http://www.b5200.org/128_128316/")
-    bar = pyqtbar(work, 51)
+    bar = pyqtbar(51, "http://www.b5200.org/128_128316/")
+    bar.close()

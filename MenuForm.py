@@ -5,7 +5,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 from PyQt5.QtWidgets import QHeaderView, QAbstractItemView
 
 import common
-from ProgressBar import Runthread, pyqtbar
+from ProgressBar import Runthread, pyqtbar, ProcessBar
 from ReadModel import Read_Model
 
 
@@ -91,6 +91,10 @@ class Menu_Form(object):
         dialog2.exec_()
 
     def download(self):
-        work = Runthread(self.href_url)
-        bar = pyqtbar(work, len(self.title_list))
-        bar.close
+        dialog3 = QtWidgets.QDialog()
+        bar = ProcessBar(len(self.title_list), self.href_url)
+        bar.run_work(dialog3)
+        dialog3.show()
+        bar.show()
+        # pyqtbar(len(self.title_list), self.href_url)
+        # bar.close()
